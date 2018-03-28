@@ -63,10 +63,13 @@ class Logger(object):
             :param folder: location to save data
             : param environment_name: name of the environment
             """
-            self.final_rewards_mean = []
-            self.final_rewards_median =[]
-            self.final_rewards_min = []
-            self.final_rewards_max = []
+            # self.final_rewards_mean = []
+            # self.final_rewards_median =[]
+            # self.final_rewards_min = []
+            # self.final_rewards_max = []
+
+            self.all_rewards = []
+            self.all_timesteps = []
 
             # self.all_value_loss = []
             # self.all_policy_loss = []
@@ -75,26 +78,32 @@ class Logger(object):
             create_folder(self.save_folder)
 
 
-      def record_reward(self, reward_return):
-            self.returns_eval = reward_return
+      # def record_reward(self, reward_return):
+      #       self.returns_eval = reward_return
 
-      def record_data(self, final_rewards_mean, final_rewards_median, final_rewards_min, final_rewards_max):
-            self.final_rewards_mean.append(final_rewards_mean)
-            self.final_rewards_median.append(final_rewards_median)
-            self.final_rewards_min.append(final_rewards_min)
-            self.final_rewards_max.append(final_rewards_max)
+      def record_data(self, all_rewards, all_timesteps):
+            self.all_rewards = all_rewards
+            self.all_timesteps = all_timesteps
+
+            # self.final_rewards_mean.append(final_rewards_mean)
+            # self.final_rewards_median.append(final_rewards_median)
+            # self.final_rewards_min.append(final_rewards_min)
+            # self.final_rewards_max.append(final_rewards_max)
             # self.all_value_loss.append(all_value_loss)
             # self.all_policy_loss.append(all_value_loss)
 
 
 
       def save(self):
-            np.save(os.path.join(self.save_folder, "final_rewards_mean.npy"), self.final_rewards_mean)
-            np.save(os.path.join(self.save_folder, "final_rewards_median.npy"), self.final_rewards_median)
-            np.save(os.path.join(self.save_folder, "final_rewards_min.npy"), self.final_rewards_min)
-            np.save(os.path.join(self.save_folder, "final_rewards_max.npy"), self.final_rewards_max)
-            # np.save(os.path.join(self.save_folder, "all_value_loss.npy"), self.all_value_loss)
-            # np.save(os.path.join(self.save_folder, "all_policy_loss.npy"), self.all_policy_loss)
+        np.save(os.path.join(self.save_folder, "all_rewards.npy"), self.all_rewards)
+        np.save(os.path.join(self.save_folder, "all_timesteps.npy"), self.all_timesteps)
+
+        # np.save(os.path.join(self.save_folder, "final_rewards_mean.npy"), self.final_rewards_mean)
+        # np.save(os.path.join(self.save_folder, "final_rewards_median.npy"), self.final_rewards_median)
+        # np.save(os.path.join(self.save_folder, "final_rewards_min.npy"), self.final_rewards_min)
+        # np.save(os.path.join(self.save_folder, "final_rewards_max.npy"), self.final_rewards_max)
+        # # np.save(os.path.join(self.save_folder, "all_value_loss.npy"), self.all_value_loss)
+        # # np.save(os.path.join(self.save_folder, "all_policy_loss.npy"), self.all_policy_loss)
 
 
 

@@ -10,7 +10,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.autograd import Variable
-from visualize import get_stats
 
 from arguments import get_args
 from baselines.common.vec_env.dummy_vec_env import DummyVecEnv
@@ -25,7 +24,7 @@ from utils import Logger
 
 args = get_args()
 
-# assert args.algo in ['a2c']
+assert args.algo in ['a2c']
 
 num_updates = int(args.num_frames) // args.num_steps // args.num_processes
 
@@ -48,12 +47,12 @@ def main():
 
     os.environ['OMP_NUM_THREADS'] = '1'
 
-    logger = Logger(algorithm_name = args.algo, environment_name = args.env_name, folder = args.folder)
-    logger.save_args(args)
+    # logger = Logger(algorithm_name = args.algo, environment_name = args.env_name, folder = args.folder)
+    # logger.save_args(args)
 
-    print ("---------------------------------------")
-    print ('Saving to', logger.save_folder)
-    print ("---------------------------------------")    
+    # print ("---------------------------------------")
+    # print ('Saving to', logger.save_folder)
+    # print ("---------------------------------------")    
 
 
     if args.vis:
@@ -157,37 +156,33 @@ def main():
 
         rollouts.compute_returns(next_value, args.use_gae, args.gamma, args.tau)
 
-        values, action_log_probs, dist_entropy, states, action_mean, action_std = actor_critic.evaluate_actions_mean_and_std(Variable(rollouts.observations[:-1].view(-1, *obs_shape)),
+        values, action_log_probs, dist_entropy, states = actor_critic.evaluate_actions(Variable(rollouts.observations[:-1].view(-1, *obs_shape)),
                                                                                        Variable(rollouts.states[0].view(-1, actor_critic.state_size)),
                                                                                        Variable(rollouts.masks[:-1].view(-1, 1)),
                                                                                        Variable(rollouts.actions.view(-1, action_shape)))
 
-        target_values, target_action_log_probs, target_dist_entropy, target_states, target_action_mean, target_action_std = target_actor_critic.evaluate_actions_mean_and_std(Variable(rollouts.observations[:-1].view(-1, *obs_shape)),
-                                                                                       Variable(rollouts.states[0].view(-1, actor_critic.state_size)),
-                                                                                       Variable(rollouts.masks[:-1].view(-1, 1)),
-                                                                                       Variable(rollouts.actions.view(-1, action_shape)))
+        """
+        Used for KL Constraint in case of Continuous Action Stochastic Policies
+        """
+        # target_values, target_action_log_probs, target_dist_entropy, target_states, target_action_mean, target_action_std = target_actor_critic.evaluate_actions_mean_and_std(Variable(rollouts.observations[:-1].view(-1, *obs_shape)),
+        #                                                                                Variable(rollouts.states[0].view(-1, actor_critic.state_size)),
+        #                                                                                Variable(rollouts.masks[:-1].view(-1, 1)),
+        #                                                                                Variable(rollouts.actions.view(-1, action_shape)))
 
 
-        actor_regularizer_loss = (torch.log(action_std/target_action_std) + (action_std.pow(2) + (action_mean - target_action_mean).pow(2))/(2*target_action_std.pow(2)) - 0.5)
-        #t_log_probs = Variable(target_action_log_probs.data, requires_grad=False)
-
+        # actor_regularizer_loss = (torch.log(action_std/target_action_std) + (action_std.pow(2) + (action_mean - target_action_mean).pow(2))/(2*target_action_std.pow(2)) - 0.5)
 
         values = values.view(args.num_steps, args.num_processes, 1)
         action_log_probs = action_log_probs.view(args.num_steps, args.num_processes, 1)
-        #t_log_probs = t_log_probs.view(args.num_steps, args.num_processes, 1)
 
         advantages = Variable(rollouts.returns[:-1]) - values
         value_loss = advantages.pow(2).mean()
 
-        #actor_regularizer_loss = actor_regularizer_criterion(action_log_probs, t_log_probs)
+        ### Loss with regularizer added
+        ##action_loss = -(Variable(advantages.data) * action_log_probs).mean() + args.actor_lambda * actor_regularizer_loss.mean(0).sum()
 
-        action_loss = -(Variable(advantages.data) * action_log_probs).mean() + args.actor_lambda * actor_regularizer_loss.mean(0).sum()
+        action_loss = -(Variable(advantages.data) * action_log_probs).mean()
 
-        # if j > 1000 and j < 3000:
-        #     args.actor_lambda *= 0.9
-        # elif j > 3000:
-        #     args.actor_lambda *= 1.0
-            #args.actor_lambda = max(args.actor_lambda, 0.9)
 
 
         optimizer.zero_grad()
@@ -199,8 +194,8 @@ def main():
 
         ## Exponential average for target updates
         #if (j%args.target_update_interval == 0):
-        for param, target_param in zip(actor_critic.parameters(), target_actor_critic.parameters()):
-            target_param.data.copy_(args.target_tau * param.data + (1 - args.target_tau) * target_param.data)
+        # for param, target_param in zip(actor_critic.parameters(), target_actor_critic.parameters()):
+        #     target_param.data.copy_(args.target_tau * param.data + (1 - args.target_tau) * target_param.data)
 
         rollouts.after_update()
 
@@ -249,15 +244,6 @@ def main():
                 win = visdom_plot(viz, win, args.log_dir, args.env_name, args.algo)
             except IOError:
                 pass
-
-
-
-        all_timesteps, all_rewards = get_stats(args.log_dir)
-
-
-    logger.record_data(all_rewards, all_timesteps)
-    logger.save()
-
 
 if __name__ == "__main__":
     main()

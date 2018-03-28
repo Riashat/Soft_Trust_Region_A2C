@@ -133,10 +133,27 @@ def visdom_plot(viz, win, folder, game, name, bin_size=100, smooth=1):
 
     # Show it in visdom
     image = np.transpose(image, (2, 0, 1))
+
+    all_timesteps = tx
+    all_rewards = ty
+
+    # np.save('./results_temp/rewards.npy', all_rewards)
+    # np.save('./results_temp/timesteps.npy', all_timesteps)
+
+    # return viz.image(image, win=win)
     return viz.image(image, win=win)
+
+
+def get_stats(folder, smooth=1, bin_size=100):
+    tx, ty = load_data(folder, smooth, bin_size)
+    all_timesteps = tx
+    all_rewards = ty
+
+    return all_timesteps, all_rewards
 
 
 if __name__ == "__main__":
     from visdom import Visdom
     viz = Visdom()
-    visdom_plot(viz, None, '/tmp/gym/', 'BreakOut', 'a2c', bin_size=100, smooth=1)
+    visdom_plot(viz, None, './results_temp/', 'BreakOut', 'a2c', bin_size=100, smooth=1)
+

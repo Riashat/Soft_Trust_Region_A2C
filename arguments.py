@@ -5,7 +5,7 @@ import torch
 
 def get_args():
     parser = argparse.ArgumentParser(description='RL')
-    parser.add_argument('--algo', default='a2c',
+    parser.add_argument('--algo', default='trust_a2c',
                         help='algorithm to use: a2c | ppo | acktr')
     parser.add_argument('--lr', type=float, default=7e-4,
                         help='learning rate (default: 7e-4)')
@@ -59,7 +59,7 @@ def get_args():
                         help='number of frames to train (default: 10e6)')
     parser.add_argument('--env_name', default='HalfCheetah-v1',
                         help='environment to train on (default: HalfCheetah-v1)')
-    parser.add_argument('--log-dir', default='/tmp/gym/',
+    parser.add_argument('--log-dir', default='./results_temp/',
                         help='directory to save agent logs (default: /tmp/gym)')
     parser.add_argument('--save-dir', default='./trained_models/',
                         help='directory to save agent logs (default: ./trained_models/)')
