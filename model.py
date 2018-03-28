@@ -23,13 +23,14 @@ class FFPolicy(nn.Module):
     def act(self, inputs, states, masks, deterministic=False):
         value, x, states = self(inputs, states, masks)
         action = self.dist.sample(x, deterministic=deterministic)
-        action_log_probs, dist_entropy = self.dist.logprobs_and_entropy(x, action)
+        action_log_probs, dist_entropy, _ = self.dist.logprobs_and_entropy(x, action)
         return value, action, action_log_probs, states
 
     def evaluate_actions(self, inputs, states, masks, actions):
         value, x, states = self(inputs, states, masks)
-        action_log_probs, dist_entropy = self.dist.logprobs_and_entropy(x, actions)
-        return value, action_log_probs, dist_entropy, states
+        action_log_probs, dist_entropy, all_log_probs = self.dist.logprobs_and_entropy(x, actions)
+
+        return value, action_log_probs, dist_entropy, states, all_log_probs
 
     def evaluate_actions_mean_and_std(self, inputs, states, masks, actions):
         value, x, states = self(inputs, states, masks)

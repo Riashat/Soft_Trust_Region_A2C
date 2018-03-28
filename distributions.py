@@ -35,7 +35,7 @@ class Categorical(nn.Module):
         action_log_probs = log_probs.gather(1, actions)
 
         dist_entropy = -(log_probs * probs).sum(-1).mean()
-        return action_log_probs, dist_entropy
+        return action_log_probs, dist_entropy, log_probs
 
 
 class DiagGaussian(nn.Module):
