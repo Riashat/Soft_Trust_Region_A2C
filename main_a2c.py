@@ -27,22 +27,22 @@ args = get_args()
 
 num_updates = int(args.num_frames) // args.num_steps // args.num_processes
 
-# seed = np.random.randint(1,1000)
-# #args.env.seed(seed)
-# torch.manual_seed(seed)
-# np.random.seed(seed)
+seed = np.random.randint(1,15)
+#args.env.seed(seed)
+torch.manual_seed(seed)
+np.random.seed(seed)
 
-# torch.manual_seed(seed)
-# if args.cuda:
-#     torch.cuda.manual_seed(seed)
+torch.manual_seed(seed)
+if args.cuda:
+    torch.cuda.manual_seed(seed)
 
 
 """
 OLD
 """
-torch.manual_seed(args.seed)
-if args.cuda:
-    torch.cuda.manual_seed(args.seed)
+# torch.manual_seed(args.seed)
+# if args.cuda:
+#     torch.cuda.manual_seed(args.seed)
 
 try:
     os.makedirs(args.log_dir)
