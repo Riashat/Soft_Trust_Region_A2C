@@ -44,7 +44,7 @@ args = parser.parse_args()
 
 experiments = args.experiments
 env_name = args.env_name
-seed = args.seed
+# seed = args.seed
 algo = args.algo
 num_processes=args.num_processes
 num_frames = args.num_frames

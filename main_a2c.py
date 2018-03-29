@@ -27,14 +27,18 @@ args = get_args()
 
 num_updates = int(args.num_frames) // args.num_steps // args.num_processes
 
+"""
+Setting random seeds for different experiment runs
+"""
 seed = np.random.randint(1,15)
-#args.env.seed(seed)
+# args.env.seed(seed)
 torch.manual_seed(seed)
 np.random.seed(seed)
 
 torch.manual_seed(seed)
 if args.cuda:
     torch.cuda.manual_seed(seed)
+args.seed = seed
 
 
 """
