@@ -24,7 +24,7 @@ def get_args():
                         help='parameter for exponential average (default: 0.001)')
 
     parser.add_argument('--actor_lambda', type=float, default=0.01,
-                        help='parameter for exponential average (default: 1)')
+                        help='weighting for actor regularizer, actor_lambda : default/tuned = 0.01')
 
     parser.add_argument('--target_update_interval', type=int, default=10,
                         help='parameter for target update (default: 10)')
@@ -37,7 +37,7 @@ def get_args():
                         help='max norm of gradients (default: 0.5)')
     parser.add_argument('--seed', type=int, default=1,
                         help='random seed (default: 1)')
-    parser.add_argument('--num-processes', type=int, default=16,
+    parser.add_argument('--num_processes', type=int, default=16,
                         help='how many training CPU processes to use (default: 16)')
     parser.add_argument('--num-steps', type=int, default=5,
                         help='number of forward steps in A2C (default: 5)')
@@ -55,7 +55,7 @@ def get_args():
                         help='save interval, one save per n updates (default: 10)')
     parser.add_argument('--vis-interval', type=int, default=100,
                         help='vis interval, one log per n updates (default: 100)')
-    parser.add_argument('--num-frames', type=int, default=10e6,
+    parser.add_argument('--num_frames', type=int, default=10e6,
                         help='number of frames to train (default: 10e6)')
     parser.add_argument('--env_name', default='HalfCheetah-v1',
                         help='environment to train on (default: HalfCheetah-v1)')
