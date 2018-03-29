@@ -110,6 +110,7 @@ def main():
 
     if args.cuda:
         actor_critic.cuda()
+        target_actor_critic.cuda()
 
     actor_regularizer_criterion = nn.KLDivLoss()
     optimizer = optim.RMSprop(actor_critic.parameters(), args.lr, eps=args.eps, alpha=args.alpha)
